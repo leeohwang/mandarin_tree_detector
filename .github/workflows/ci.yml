@@ -1,0 +1,46 @@
+name: CI
+
+# Run the GPU-free test suite on every push and PR to main. The heavy GPU
+# backends (autodistill / a real Grounding DINO or YOLO-World forward pass) need
+# CUDA and model weights and are NOT exercised here — those tests skip themselves
+# via pytest.importorskip. What DOES run: the canonical<->YOLO/COCO converters,
+# tiling math, ingest/export, the review store, AND the detector adapters'
+# supervision->canonical conversion + registry/construction/fallback (autodistill
+# is mocked in-process, so those run on a plain CPU runner). See CLAUDE.md §13.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install package + test deps
+        # [review,dev] is the light, torch-free stack. We add `supervision`
+        # (and headless OpenCV for cv2) so the detector-adapter and pipeline-glue
+        # tests run for real instead of skipping — that is what guards the GPU
+        # backends' coordinate conversion on a CPU runner. `supervision` is pinned
+        # to the same range as the [gpu]/[detect-hf] extras in pyproject.toml.
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[review,dev]"
+          pip install "supervision>=0.22,<0.27" opencv-python-headless
+
+      - name: Run tests
+        run: python -m pytest -q

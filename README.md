@@ -146,6 +146,13 @@ Prompt phrasing and `box_threshold` are dataset-sensitive — see `CLAUDE.md` §
 make test           # run the GPU-free test suite (converters, tiling, ingest, export)
 ```
 
+**Continuous integration.** `.github/workflows/ci.yml` runs the full test suite on every push
+and PR to `main`, across Python 3.10/3.11/3.12. It installs the light `[review,dev]` stack plus
+`supervision`, so even the detector-adapter tests run on a plain CPU runner — the GPU backends'
+`supervision -> canonical` conversion, the registry/construction dispatch, and the autodistill ->
+HF fallback are all exercised with autodistill mocked in-process. Only real model forward passes
+(which need CUDA + weights) skip themselves.
+
 - The **core** stays dependency-light (pydantic + pyyaml only) so it imports on any machine.
 - GPU-heavy backends (`autodistill`, `supervision`, `ultralytics`) live behind the `[gpu]`
   extra and are imported lazily, so importing the CLI or the review server never pulls in torch.
