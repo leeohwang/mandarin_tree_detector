@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Grove Review</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!--
+    Grove review UI (CLAUDE.md §6.8). Vanilla HTML/CSS/JS + <canvas>, no build
+    tooling. This is the human correction loop that turns raw auto-labels (the
+    teacher's drafts) into a trustworthy dataset. The deliverable is LABEL DATA,
+    so every interaction here exists to make boxes correct, not pretty.
+
+    All boxes travel the REST API in CANONICAL coords (normalized xyxy, top-left
+    origin, each in [0,1]). The conversion to/from canvas pixels happens ONLY in
+    app.js at the draw/hit-test boundary — see the comments there (§12 silent-bug
+    territory).
+  -->
+  <div id="app">
+
+    <!-- LEFT: scrollable image queue + progress header ------------------- -->
+    <aside id="sidebar">
+      <header id="queue-header">
+        <div id="project-name" class="project-name">Grove</div>
+        <div id="progress-text" class="progress-text">0 / 0 reviewed</div>
+        <div id="progress-bar" class="progress-bar" aria-hidden="true">
+          <div id="progress-fill" class="progress-fill"></div>
+        </div>
+        <div id="progress-detail" class="progress-detail">
+          <span class="pill pill-pending"><span class="dot dot-pending"></span><span id="count-pending">0</span> pending</span>
+          <span class="pill pill-skipped"><span class="dot dot-skipped"></span><span id="count-skipped">0</span> skipped</span>
+        </div>
+      </header>
+      <ul id="queue" class="queue" tabindex="-1"></ul>
+    </aside>
+
+    <!-- MAIN: toolbar + canvas stage ------------------------------------- -->
+    <main id="stage-wrap">
+      <div id="toolbar" class="toolbar">
+        <div class="toolbar-group">
+          <button id="btn-prev" class="btn" title="Previous image (Left / A)">&#8592; Prev <kbd>A</kbd></button>
+          <button id="btn-next" class="btn" title="Next image (Right / D)">Next <kbd>D</kbd> &#8594;</button>
+        </div>
+
+        <div class="toolbar-group toolbar-id">
+          <span id="current-id" class="current-id" title="Current image id">&mdash;</span>
+          <span id="current-status" class="status-badge status-pending">pending</span>
+        </div>
+
+        <div class="toolbar-group">
+          <button id="btn-newbox" class="btn" title="New box mode (N)">New box <kbd>N</kbd></button>
+          <button id="btn-delete" class="btn" title="Delete selected box (Del)">Delete <kbd>Del</kbd></button>
+          <label class="label-select" title="Relabel the selected box (number keys)">
+            class:
+            <select id="class-select" class="class-select"></select>
+          </label>
+        </div>
+
+        <div class="toolbar-group">
+          <button id="btn-reviewed" class="btn btn-reviewed" title="Mark reviewed and advance (R)">Reviewed <kbd>R</kbd></button>
+          <button id="btn-skipped" class="btn btn-skipped" title="Mark skipped (S)">Skip <kbd>S</kbd></button>
+        </div>
+
+        <div class="toolbar-group toolbar-right">
+          <button id="btn-help" class="btn btn-ghost" title="Toggle shortcuts">Keys <kbd>?</kbd></button>
+          <button id="btn-export" class="btn btn-export" title="Export final YOLO + COCO dataset">Export</button>
+        </div>
+      </div>
+
+      <div id="stage" class="stage">
+        <canvas id="canvas" class="canvas"></canvas>
+        <div id="empty-state" class="empty-state">Loading&hellip;</div>
+      </div>
+
+      <div id="statusbar" class="statusbar">
+        <span id="hint" class="hint">Drag on empty space to draw a box &middot; click a box to select &middot; drag handles to resize</span>
+        <span id="save-state" class="save-state">saved</span>
+      </div>
+    </main>
+  </div>
+
+  <!-- Keyboard legend (toggled with ?) ----------------------------------- -->
+  <div id="help-overlay" class="help-overlay hidden" role="dialog" aria-label="Keyboard shortcuts">
+    <div class="help-card">
+      <h2>Keyboard shortcuts</h2>
+      <table class="help-table">
+        <tr><td><kbd>&#8592;</kbd> / <kbd>A</kbd></td><td>Previous image</td></tr>
+        <tr><td><kbd>&#8594;</kbd> / <kbd>D</kbd></td><td>Next image</td></tr>
+        <tr><td><kbd>N</kbd></td><td>New-box mode (drag to draw)</td></tr>
+        <tr><td><kbd>Del</kbd> / <kbd>Backspace</kbd></td><td>Delete selected box</td></tr>
+        <tr><td><kbd>R</kbd></td><td>Mark reviewed &amp; advance</td></tr>
+        <tr><td><kbd>S</kbd></td><td>Mark skipped</td></tr>
+        <tr><td><kbd>Esc</kbd></td><td>Deselect / cancel drawing</td></tr>
+        <tr><td><kbd>1</kbd>&hellip;<kbd>9</kbd></td><td>Set class of selected box</td></tr>
+        <tr><td><kbd>?</kbd></td><td>Toggle this help</td></tr>
+      </table>
+      <button id="help-close" class="btn btn-ghost">Close</button>
+    </div>
+  </div>
+
+  <!-- Transient toast for export summary / errors ------------------------ -->
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

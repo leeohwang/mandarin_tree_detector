@@ -1,0 +1,356 @@
+/*
+  Grove review UI styles (CLAUDE.md §6.8, §4).
+
+  Design goals: a tool a human stares at for HUNDREDS of images, so prioritize
+  clarity, legibility, and fast scanning over decoration. Dark-friendly neutral
+  palette. Status colors (pending / reviewed / skipped) are defined ONCE as CSS
+  variables and reused for sidebar dots, the status badge, and the canvas box
+  outlines (the canvas reads these via getComputedStyle in app.js) so the three
+  surfaces never drift apart.
+*/
+
+:root {
+  --bg:        #14171c;   /* app background */
+  --bg-panel:  #1b1f26;   /* sidebar / bars */
+  --bg-stage:  #0e1013;   /* canvas backdrop (letterbox) */
+  --bg-elev:   #232833;   /* buttons, inputs, queue rows */
+  --bg-hover:  #2c323e;
+  --border:    #313846;
+  --text:      #e6e9ef;
+  --text-dim:  #9aa3b2;
+  --text-mute: #6b7384;
+  --accent:    #4ea1ff;   /* selection / focus */
+  --accent-dim:#27425f;
+
+  /* Status palette — shared across sidebar dots, badge, and canvas boxes. */
+  --status-pending:  #c9923a;  /* amber  — not yet reviewed */
+  --status-reviewed: #3fb47f;  /* green  — confirmed good */
+  --status-skipped:  #7a8190;  /* gray   — intentionally skipped */
+
+  --box:        #4ea1ff;   /* default (unselected) box outline */
+  --box-sel:    #ff5d5d;   /* selected box outline */
+  --handle:     #ffffff;
+  --danger:     #e25555;
+
+  --radius: 6px;
+  --gap: 8px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font: 14px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+#app {
+  display: grid;
+  grid-template-columns: 290px 1fr;
+  height: 100vh;
+}
+
+/* ---- Sidebar / queue ------------------------------------------------- */
+#sidebar {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;                 /* allow inner scroll */
+  background: var(--bg-panel);
+  border-right: 1px solid var(--border);
+}
+
+#queue-header {
+  padding: 14px 14px 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.project-name {
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.progress-text {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.progress-bar {
+  height: 6px;
+  border-radius: 99px;
+  background: var(--bg-elev);
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+.progress-fill {
+  height: 100%;
+  width: 0%;
+  background: var(--status-reviewed);
+  transition: width 0.2s ease;
+}
+
+.progress-detail {
+  display: flex;
+  gap: 12px;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+.pill { display: inline-flex; align-items: center; gap: 5px; }
+
+.dot {
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  display: inline-block;
+  flex: 0 0 auto;
+}
+.dot-pending  { background: var(--status-pending); }
+.dot-reviewed { background: var(--status-reviewed); }
+.dot-skipped  { background: var(--status-skipped); }
+
+.queue {
+  list-style: none;
+  margin: 0;
+  padding: 6px;
+  overflow-y: auto;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.queue-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 9px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  user-select: none;
+  color: var(--text-dim);
+}
+.queue-item:hover { background: var(--bg-hover); color: var(--text); }
+.queue-item.active {
+  background: var(--accent-dim);
+  color: var(--text);
+  outline: 1px solid var(--accent);
+}
+.queue-item .qid {
+  flex: 1 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+}
+.queue-item .qcount {
+  flex: 0 0 auto;
+  font-size: 11px;
+  color: var(--text-mute);
+  background: var(--bg-elev);
+  border-radius: 99px;
+  padding: 1px 7px;
+  min-width: 22px;
+  text-align: center;
+}
+
+/* ---- Stage (main) ---------------------------------------------------- */
+#stage-wrap {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding: 9px 12px;
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--border);
+}
+.toolbar-group { display: flex; align-items: center; gap: 7px; }
+.toolbar-id { gap: 9px; }
+.toolbar-right { margin-left: auto; }
+
+.current-id {
+  font-weight: 600;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 13px;
+  max-width: 260px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.status-badge {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 99px;
+  color: #11151b;
+}
+.status-pending  { background: var(--status-pending); }
+.status-reviewed { background: var(--status-reviewed); }
+.status-skipped  { background: var(--status-skipped); }
+
+/* Buttons --------------------------------------------------------------- */
+.btn {
+  appearance: none;
+  border: 1px solid var(--border);
+  background: var(--bg-elev);
+  color: var(--text);
+  padding: 7px 11px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  line-height: 1;
+  white-space: nowrap;
+}
+.btn:hover { background: var(--bg-hover); }
+.btn:active { transform: translateY(1px); }
+.btn:disabled { opacity: 0.45; cursor: default; }
+.btn.active { outline: 2px solid var(--accent); background: var(--accent-dim); }
+
+.btn kbd, .help-table kbd, .toolbar kbd {
+  font: 11px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 2px 5px;
+  color: var(--text-dim);
+}
+.btn-reviewed:hover { border-color: var(--status-reviewed); }
+.btn-skipped:hover  { border-color: var(--status-skipped); }
+.btn-export {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #0b1118;
+  font-weight: 600;
+}
+.btn-export:hover { background: #6cb3ff; }
+.btn-ghost { background: transparent; }
+
+.label-select {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+.class-select {
+  appearance: none;
+  background: var(--bg-elev);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 6px 9px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+/* Canvas stage ---------------------------------------------------------- */
+.stage {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  background: var(--bg-stage);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.canvas {
+  display: block;
+  /* exact pixel size is set in app.js to fill the stage; cursor flips between
+     crosshair (new-box mode) and default via a body class. */
+}
+body.mode-newbox .canvas { cursor: crosshair; }
+
+.empty-state {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-mute);
+  font-size: 15px;
+  pointer-events: none;
+}
+.empty-state.hidden { display: none; }
+
+/* Status bar ------------------------------------------------------------ */
+.statusbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 12px;
+  background: var(--bg-panel);
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--text-dim);
+}
+.hint { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.save-state { flex: 0 0 auto; color: var(--status-reviewed); }
+.save-state.saving { color: var(--status-pending); }
+.save-state.error  { color: var(--danger); }
+
+/* Help overlay ---------------------------------------------------------- */
+.help-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+.help-overlay.hidden { display: none; }
+.help-card {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 22px 26px;
+  min-width: 320px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+.help-card h2 { margin: 0 0 14px; font-size: 16px; }
+.help-table { border-collapse: collapse; width: 100%; margin-bottom: 14px; }
+.help-table td { padding: 5px 10px 5px 0; vertical-align: middle; }
+.help-table td:first-child { white-space: nowrap; }
+
+/* Toast ----------------------------------------------------------------- */
+.toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 11px 16px;
+  border-radius: 8px;
+  max-width: 70vw;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+  z-index: 60;
+  font-size: 13px;
+  white-space: pre-wrap;
+}
+.toast.hidden { display: none; }
+.toast.error { border-color: var(--danger); }
+.toast.ok    { border-color: var(--status-reviewed); }

@@ -1,0 +1,46 @@
+# =============================================================================
+# Grove configuration — copy to config.yaml and edit ONLY the paths below.
+# Everything else ships with working defaults (see CLAUDE.md §6.2).
+# =============================================================================
+
+project_name: mandarin-orchard-v1
+
+paths:
+  input_dir: ./data/raw          # folder of tree images (scanned recursively)
+  work_dir: ./data/work          # manifest, predictions, preview images
+  export_dir: ./data/dataset     # final YOLO/COCO dataset output
+
+detector:
+  backend: grounding_dino        # grounding_dino | grounding_dino_hf | yolo_world
+  # ontology maps PROMPT TEXT -> CLASS NAME written into the labels.
+  # Targets each individual TREE (not the mandarin fruit). Prompt "tree trunk"
+  # separates individuals in a dense orchard better than "tree" (whose merged
+  # canopies under-segment to ~2 masses). Swap to "tree" for canopy-level boxes.
+  ontology:
+    "tree trunk": tree
+  box_threshold: 0.20            # lower to recover more individual trunks (CLAUDE.md §8/§11)
+  text_threshold: 0.15           # multi-word prompt needs a lower text threshold
+
+tiling:
+  enabled: false                 # turn on for small/dense fruit in large images
+  tile_size: 640
+  overlap: 0.20
+  nms_iou: 0.50                  # merge duplicate detections across tile seams
+
+classes:                         # canonical class list; index = YOLO class id
+  - tree
+
+export:
+  formats: [yolo, coco]
+  val_split: 0.15                # train/val split fraction (deterministic, seeded)
+  seed: 42                       # split seed for reproducibility
+
+train:                           # optional student-distillation stage (GPU side)
+  enabled: false
+  model: yolov8n.pt
+  epochs: 100
+  imgsz: 640
+
+review:
+  host: 127.0.0.1
+  port: 8000
