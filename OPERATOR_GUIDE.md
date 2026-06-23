@@ -8,6 +8,13 @@ Three things to do. Nothing else is manual.
    ```bash
    ./setup.sh
    ```
+3. Confirm your clone is wired correctly **before** spending any GPU quota (runs in seconds, no GPU needed):
+   ```bash
+   make selftest
+   ```
+   It runs the pipeline end-to-end (ingest -> detect -> export) with a stub detector. If it passes, the GPU run will work too.
+
+> **What gets detected:** the shipped default detects **individual trees** (`"tree trunk" -> tree`). To retarget — e.g. mandarin fruit — edit the `detector.ontology` and `classes` in `config.example.yaml`; both the Kaggle run and local review follow that one file.
 
 ## 2. Each labeling run (Kaggle / GPU)
 1. In the notebook's **Add Data** panel, attach your image folder (as a Dataset) and this Grove repo

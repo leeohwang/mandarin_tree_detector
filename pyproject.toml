@@ -33,17 +33,21 @@ review = [
 ]
 # GPU side (Kaggle/Colab). Pulls in torch via autodistill — never install on the Mac.
 gpu = [
-    "autodistill>=0.1.24",
-    "autodistill-grounding-dino>=0.1.4",
-    "autodistill-yolo-world>=0.1.2",
+    # Upper bounds matter for REPRODUCIBILITY: a fresh Kaggle image months from now
+    # must resolve a compatible stack, not the latest (possibly breaking) release.
+    # The autodistill family is pre-1.0, where minor bumps routinely break APIs, so
+    # ceiling them at the next minor; ceiling the rest at the next major.
+    "autodistill>=0.1.24,<0.2",
+    "autodistill-grounding-dino>=0.1.4,<0.2",
+    "autodistill-yolo-world>=0.1.2,<0.2",
     # Pin supervision to the modern-annotator era: the BoxAnnotator/LabelAnnotator
     # API and the Detections iteration tuple changed across releases (the cause of
     # a real annotate bug), so bound it to a range the detector + annotate code
     # were written and reviewed against.
     "supervision>=0.22,<0.27",
-    "ultralytics>=8.1",
-    "opencv-python>=4.8",
-    "sahi>=0.11",
+    "ultralytics>=8.1,<9",
+    "opencv-python>=4.8,<5",
+    "sahi>=0.11,<1",
 ]
 # Local CPU detection via HuggingFace Grounding DINO — the fallback used by the
 # `grounding_dino` backend (and selectable directly as `grounding_dino_hf`) when
