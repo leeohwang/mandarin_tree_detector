@@ -20,7 +20,7 @@ dependencies = [
     "pydantic>=2.5,<3",
     "PyYAML>=6.0",
     "typer>=0.9",
-    "numpy>=1.24",
+    "numpy>=1.24,<2",   # <2: opencv 4.8/4.9 + supervision/groundingdino are numpy-1-ABI wheels
     "Pillow>=10.0",
 ]
 
@@ -61,7 +61,7 @@ detect-hf = [
     "torchvision>=0.15",
     "timm>=0.9",
     "safetensors>=0.4",
-    "opencv-python>=4.8",
+    "opencv-python>=4.8,<5",
     "supervision>=0.22,<0.27",
 ]
 # Test / dev tooling (no GPU needed; detector is stubbed in tests).

@@ -1,9 +1,11 @@
 """Typed, validated configuration for Grove (CLAUDE.md §6.2).
 
-One YAML drives the whole pipeline. This module mirrors config.example.yaml
-exactly and validates it with Pydantic v2, so a bad enum or out-of-range
-threshold fails loudly at load time rather than producing a silently wrong
-dataset hours later.
+One YAML drives the whole pipeline. config.example.yaml is the shipped source of
+truth (it targets individual trees); this module defines that same schema and
+validates it with Pydantic v2, so a bad enum or out-of-range threshold fails
+loudly at load time rather than producing a silently wrong dataset hours later.
+The field defaults below are minimal fallbacks for keys omitted from the YAML,
+not necessarily the shipped example's values.
 
 Defaults are chosen so a MINIMAL YAML (just paths + ontology) still validates —
 the operator edits only what matters (CLAUDE.md §10.4). load_config() also

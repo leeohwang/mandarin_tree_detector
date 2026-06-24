@@ -81,7 +81,7 @@ cat <<'DONE'
 
 ==> Done.
    Next:
-     1. Put a labeled dataset where config.yaml points (paths.export_dir).
+     1. Unzip grove_dataset.zip into ./data (so ./data/work and ./data/dataset exist).
      2. Run the review UI:   make review     (or: .venv/bin/grove review --config config.yaml)
 
    See OPERATOR_GUIDE.md for the full, minimal run checklist.

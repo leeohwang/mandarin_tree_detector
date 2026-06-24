@@ -123,10 +123,11 @@ paths and the detector ontology**; every other field has a working default.
 
 ```yaml
 detector:
-  backend: grounding_dino          # grounding_dino | yolo_world  (swappable, §2.5)
+  backend: grounding_dino          # grounding_dino | grounding_dino_hf | yolo_world  (swappable, §2.5)
   ontology:
-    "mandarin orange on tree": mandarin   # PROMPT TEXT -> CLASS NAME
-  box_threshold: 0.30
+    "tree trunk": tree             # PROMPT TEXT -> CLASS NAME (ships targeting individual trees)
+  box_threshold: 0.20
+  text_threshold: 0.15
 tiling:
   enabled: false                   # turn on for small/distant fruit in wide shots
 export:
