@@ -2,6 +2,8 @@
 
 [![CI](https://github.com/leeohwang/mandarin_tree_detector/actions/workflows/ci.yml/badge.svg)](https://github.com/leeohwang/mandarin_tree_detector/actions/workflows/ci.yml)
 
+**English** · [简体中文](README.zh-CN.md)
+
 Grove turns a folder of mandarin-tree photos into **object-detection training data**
 (YOLO + COCO). An open-vocabulary detector draws draft boxes, a human corrects them in a
 local browser UI, and the corrected labels are exported as a clean dataset — the factory
