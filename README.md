@@ -132,6 +132,7 @@ detector:
     "tree trunk": tree             # PROMPT TEXT -> CLASS NAME (ships targeting individual trees)
   box_threshold: 0.20
   text_threshold: 0.15
+  max_box_area_frac: 0.85          # drop near-full-frame boxes (whole-image false positives)
 tiling:
   enabled: false                   # turn on for small/distant fruit in wide shots
 export:
