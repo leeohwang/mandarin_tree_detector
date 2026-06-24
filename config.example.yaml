@@ -20,6 +20,10 @@ detector:
     "tree trunk": tree
   box_threshold: 0.20            # lower to recover more individual trunks (CLAUDE.md §8/§11)
   text_threshold: 0.15           # multi-word prompt needs a lower text threshold
+  # Safeguard: drop any box covering more than this fraction of the image. Open-vocab
+  # detectors often draw ONE box around the whole picture (useless as a label) — this
+  # removes them automatically. Set to 1.0 to disable. (CLAUDE.md §11)
+  max_box_area_frac: 0.85
 
 tiling:
   enabled: false                 # turn on for small/dense fruit in large images

@@ -52,6 +52,11 @@ class DetectorConfig(BaseModel):
     )
     box_threshold: float = 0.30
     text_threshold: float = 0.25
+    # Safeguard against whole-image boxes: drop any detection whose box covers more
+    # than this fraction of the image. Open-vocab detectors (especially on a whole-
+    # scene prompt like "tree") frequently emit one box around the ENTIRE picture,
+    # which is useless as an object-level label. 1.0 disables the safeguard (§11).
+    max_box_area_frac: float = 0.85
 
     @field_validator("box_threshold", "text_threshold")
     @classmethod
@@ -59,6 +64,14 @@ class DetectorConfig(BaseModel):
         # Confidence thresholds are probabilities; out-of-range values are bugs.
         if not 0.0 <= v <= 1.0:
             raise ValueError(f"threshold must be in [0, 1], got {v}")
+        return v
+
+    @field_validator("max_box_area_frac")
+    @classmethod
+    def _area_frac_in_range(cls, v: float) -> float:
+        # A fraction of image area; 0 is meaningless, 1.0 means "disabled".
+        if not 0.0 < v <= 1.0:
+            raise ValueError(f"max_box_area_frac must be in (0, 1], got {v}")
         return v
 
 

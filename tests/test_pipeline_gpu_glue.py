@@ -50,6 +50,32 @@ class _StubDetector:
         return [Detection(label="mandarin", box=BBox(x1=0.1, y1=0.1, x2=0.4, y2=0.5), score=0.8)]
 
 
+def test_detect_drops_oversized_boxes(tmp_path, monkeypatch):
+    """Whole-image-box safeguard: detect() drops any box whose area exceeds
+    cfg.detector.max_box_area_frac — the common open-vocab failure mode where the
+    detector boxes the ENTIRE image (CLAUDE.md §11)."""
+    from grove.pipeline import detect as detect_mod
+    from grove.pipeline.ingest import ingest
+
+    cfg = _cfg(tmp_path)
+    cfg.detector.max_box_area_frac = 0.85
+    ingest(cfg)
+
+    class _OversizeStub:
+        # One ~full-frame box (area ~1.0 -> dropped) + one legit box (kept).
+        def detect(self, image_bgr):
+            return [
+                Detection(label="tree", box=BBox(x1=0.001, y1=0.001, x2=0.999, y2=0.999), score=0.9),
+                Detection(label="tree", box=BBox(x1=0.10, y1=0.10, x2=0.40, y2=0.50), score=0.8),
+            ]
+
+    monkeypatch.setattr(detect_mod, "get_detector", lambda c: _OversizeStub())
+    man = detect_mod.detect(cfg)
+    for r in man.images:
+        assert len(r.detections) == 1, "full-frame box should have been dropped"
+        assert r.detections[0].box.area <= 0.85
+
+
 def test_detect_orchestration_and_provenance(tmp_path, monkeypatch):
     from grove.pipeline import detect as detect_mod
     from grove.pipeline.ingest import ingest

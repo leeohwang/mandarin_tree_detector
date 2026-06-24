@@ -162,6 +162,11 @@ def detect(cfg: Config) -> Manifest:
         # Run the detector. Output boxes are already CANONICAL (the backend/tiling
         # layer guarantees normalized xyxy in [0,1]); assign straight to the record.
         detections = detector.detect(image_bgr)
+        # Safeguard: drop near-full-frame boxes (a common open-vocab failure mode —
+        # one box around the WHOLE image — that is useless as an object label, §11).
+        detections = _drop_oversized_boxes(
+            detections, cfg.detector.max_box_area_frac, record.id
+        )
         record.detections = detections
         result_records.append(record)
         newly_detected += 1
@@ -194,6 +199,31 @@ def detect(cfg: Config) -> Manifest:
         predictions_path,
     )
     return predictions
+
+
+def _drop_oversized_boxes(
+    detections: list, max_area_frac: float, image_id: str
+) -> list:
+    """Drop near-full-frame boxes (area > ``max_area_frac`` of the image).
+
+    Open-vocab detectors — especially on a whole-scene prompt like "tree" — often
+    emit a single box covering ~the entire image. Such a box is useless as an
+    object-level label and a recurring review headache, so we drop any detection
+    whose CANONICAL (normalized) box area exceeds ``max_area_frac``. A value of
+    1.0 disables the safeguard. (CLAUDE.md §11 — domain guidance.)
+    """
+    if max_area_frac >= 1.0 or not detections:
+        return detections
+    kept = [d for d in detections if d.box.area <= max_area_frac]
+    dropped = len(detections) - len(kept)
+    if dropped:
+        logger.info(
+            "%s: dropped %d oversized box(es) (area > %.2f of image)",
+            image_id,
+            dropped,
+            max_area_frac,
+        )
+    return kept
 
 
 def _save_predictions(
