@@ -1,4 +1,4 @@
-"""Ingest tests: dimensions, EXIF normalization, id rules, skip-corrupt (CLAUDE.md §6.3, §13).
+"""Ingest tests: dimensions, EXIF normalization, id rules, skip-corrupt (SPEC.md §6.3, §13).
 
 §6.3 makes ingest the producer of the data contract everything downstream reads,
 so the things that can silently break the whole pipeline get pinned here:

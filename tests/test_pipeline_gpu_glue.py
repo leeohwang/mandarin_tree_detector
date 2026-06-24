@@ -1,5 +1,5 @@
 """Executed validation of the GPU-side pipeline GLUE that needs cv2/supervision
-but NOT a real model or a GPU (CLAUDE.md §6.4, §6.6, §7).
+but NOT a real model or a GPU (SPEC.md §6.4, §6.6, §7).
 
 We stub the detector (the only part that truly needs a GPU) and run the real
 detect() orchestration + resumability, and the real annotate() drawing. These
@@ -53,7 +53,7 @@ class _StubDetector:
 def test_detect_drops_oversized_boxes(tmp_path, monkeypatch):
     """Whole-image-box safeguard: detect() drops any box whose area exceeds
     cfg.detector.max_box_area_frac — the common open-vocab failure mode where the
-    detector boxes the ENTIRE image (CLAUDE.md §11)."""
+    detector boxes the ENTIRE image (SPEC.md §11)."""
     from grove.pipeline import detect as detect_mod
     from grove.pipeline.ingest import ingest
 

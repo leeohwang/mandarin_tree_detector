@@ -1,5 +1,5 @@
 /*
- * Grove review UI — frontend logic (CLAUDE.md §6.8, §8, §12).
+ * Grove review UI — frontend logic (SPEC.md §6.8, §8, §12).
  *
  * Vanilla JS, no framework, no build step. Talks to the FastAPI review server
  * over the REST API. The whole point of this tool is to turn the teacher's RAW
@@ -8,7 +8,7 @@
  *
  * ============================ COORDINATE MODEL ============================
  * The server speaks ONLY canonical coords: normalized xyxy, TOP-LEFT origin,
- * each value in [0, 1] (CLAUDE.md §8). Our in-memory box model also stores
+ * each value in [0, 1] (SPEC.md §8). Our in-memory box model also stores
  * canonical coords. The <canvas> draws in device pixels. We therefore convert
  * between the two spaces in EXACTLY ONE place each direction:
  *

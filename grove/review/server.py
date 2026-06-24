@@ -1,18 +1,18 @@
-"""FastAPI review server — the local, GPU-free correction loop (CLAUDE.md §6.8).
+"""FastAPI review server — the local, GPU-free correction loop (SPEC.md §6.8).
 
 This is the HTTP layer that fronts the AnnotationStore. It runs locally on the
-Mac with only the ``[review]`` extra installed (CLAUDE.md §10 local side), so the
+Mac with only the ``[review]`` extra installed (SPEC.md §10 local side), so the
 import discipline here is strict: FastAPI / Starlette / uvicorn + std lib + grove
 core + grove.review.store + grove.pipeline.export.write_dataset ONLY. No torch,
 cv2, supervision, or ultralytics — none of the GPU/heavy stack — may be imported
 from this module, directly or transitively (write_dataset is itself light).
 
-Server-authoritative state (CLAUDE.md §12): there is exactly ONE AnnotationStore
+Server-authoritative state (SPEC.md §12): there is exactly ONE AnnotationStore
 instance per app, created at startup, and it is the single source of truth for the
 reviewer's corrections. The frontend never trusts browser storage; every edit is a
 round-trip to this store, which persists each change to <work_dir>/review_store.json.
 
-Coordinate convention (CLAUDE.md §8/§9): every box crossing this API is CANONICAL
+Coordinate convention (SPEC.md §8/§9): every box crossing this API is CANONICAL
 — normalized xyxy, top-left origin, each value in [0, 1]. The store already speaks
 canonical; the canvas UI converts pixel<->canonical at its own boundary. Nothing
 here rescales coordinates.
@@ -40,7 +40,7 @@ _STATIC_DIR = Path(__file__).parent / "static"
 
 # Map file extension -> media type for GET /api/images/{id}/file. We avoid the
 # stdlib mimetypes module's platform variance and just enumerate the formats
-# ingest is allowed to produce (.jpg/.jpeg/.png/.webp, CLAUDE.md §6.3).
+# ingest is allowed to produce (.jpg/.jpeg/.png/.webp, SPEC.md §6.3).
 _MEDIA_TYPES = {
     ".jpg": "image/jpeg",
     ".jpeg": "image/jpeg",

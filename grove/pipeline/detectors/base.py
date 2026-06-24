@@ -1,4 +1,4 @@
-"""Detector abstraction + backend registry (CLAUDE.md §2.5, §6.4).
+"""Detector abstraction + backend registry (SPEC.md §2.5, §6.4).
 
 The whole point of this layer is the "swappable backend" requirement (§2.5):
 the rest of the pipeline asks for boxes and never knows which open-vocab model

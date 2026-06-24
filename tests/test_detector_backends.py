@@ -1,5 +1,5 @@
 """Construction, registry dispatch, and fallback for the GPU detector backends
-(CLAUDE.md §2.5, §6.4).
+(SPEC.md §2.5, §6.4).
 
 `tests/test_detectors.py` validates the *coordinate conversion* inside each
 backend's ``detect()`` but bypasses construction (``object.__new__`` + a hand-set

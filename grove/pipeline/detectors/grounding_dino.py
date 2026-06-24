@@ -1,4 +1,4 @@
-"""Grounding DINO detector backend (CLAUDE.md §2.1, §6.4).
+"""Grounding DINO detector backend (SPEC.md §2.1, §6.4).
 
 ================================  READ THIS  ================================
 Grounding DINO is the TEACHER / auto-labeler in this pipeline. It is accurate
@@ -7,7 +7,7 @@ heavy for a robot's real-time camera. It exists ONLY to draft labels that a
 human then corrects (the review step is mandatory). It is NOT the robot's
 runtime detector. The deployable, real-time model is the distilled YOLO
 "student" trained from these reviewed labels (see pipeline/train.py). Never
-treat this class as something that runs on the robot. (CLAUDE.md §2.1, §12)
+treat this class as something that runs on the robot. (SPEC.md §2.1, §12)
 ============================================================================
 
 This backend wraps `autodistill-grounding-dino`. From the outside it satisfies
@@ -15,7 +15,7 @@ the Detector protocol (pipeline/detectors/base.py): take an image, return a
 list[Detection] whose boxes are already in the CANONICAL format (normalized
 xyxy, top-left origin). All of Grounding DINO's coordinate quirks — namely that
 `supervision` reports `xyxy` in ABSOLUTE PIXELS — are normalized away here so
-nothing downstream ever sees backend-specific coordinates (CLAUDE.md §2.4, §6.4).
+nothing downstream ever sees backend-specific coordinates (SPEC.md §2.4, §6.4).
 
 Heavy imports (autodistill / torch) are LAZY: they happen inside __init__, so a
 light consumer (e.g. the CLI on a review-only Mac install) can import this module
@@ -88,7 +88,7 @@ class GroundingDINODetector:
         self._ontology = CaptionOntology(ontology)
 
         # Construct the model. Weights AUTO-DOWNLOAD on first construction/use —
-        # the operator is never asked to fetch them (CLAUDE.md §10.4).
+        # the operator is never asked to fetch them (SPEC.md §10.4).
         self._model = GroundingDINO(
             ontology=self._ontology,
             box_threshold=box_threshold,
@@ -134,7 +134,7 @@ class GroundingDINODetector:
             return self._delegate.detect(image_bgr)
 
         # Pixel dimensions from the ndarray: shape is (H, W, C). These drive the
-        # pixel -> normalized canonical conversion (CLAUDE.md §2.4, §6.4).
+        # pixel -> normalized canonical conversion (SPEC.md §2.4, §6.4).
         height, width = int(image_bgr.shape[0]), int(image_bgr.shape[1])
 
         # autodistill BaseModel exposes .predict(input) -> supervision.Detections.
@@ -172,7 +172,7 @@ class GroundingDINODetector:
             # Convert ABSOLUTE PIXEL xyxy -> canonical normalized xyxy. Wrap the
             # BBox construction: it CLAMPS to [0,1] and RAISES on a degenerate
             # (zero/negative-area) box, which the detector can occasionally emit.
-            # Drop such boxes rather than aborting the whole image (CLAUDE.md §6.4).
+            # Drop such boxes rather than aborting the whole image (SPEC.md §6.4).
             try:
                 box = BBox.from_pixel_xyxy(x1, y1, x2, y2, width, height)
             except ValueError as exc:

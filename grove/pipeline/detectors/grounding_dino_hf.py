@@ -1,4 +1,4 @@
-"""HuggingFace `transformers` Grounding DINO backend (CLAUDE.md §2.1, §2.5, §6.4).
+"""HuggingFace `transformers` Grounding DINO backend (SPEC.md §2.1, §2.5, §6.4).
 
 ================================  READ THIS  ================================
 This is the SAME Grounding DINO model as the autodistill backend
@@ -13,14 +13,14 @@ single large image is ~seconds-to-tens-of-seconds — fine for one-off labeling)
 
 Still a TEACHER, never the robot's runtime. Like every backend here it only
 DRAFTS labels for the mandatory human review step; the deployable real-time
-model is the distilled YOLO student (pipeline/train.py). (CLAUDE.md §2.1, §12)
+model is the distilled YOLO student (pipeline/train.py). (SPEC.md §2.1, §12)
 ============================================================================
 
 From the outside it satisfies the Detector protocol (detectors/base.py): take a
 BGR image, return a list[Detection] whose boxes are already CANONICAL (normalized
 xyxy, top-left origin, in [0, 1]). Grounding DINO's native output is ABSOLUTE
 PIXEL xyxy; that quirk is normalized away here so nothing downstream sees
-backend-specific coordinates (CLAUDE.md §2.4, §6.4).
+backend-specific coordinates (SPEC.md §2.4, §6.4).
 
 Heavy imports (torch / transformers) are LAZY: they happen inside __init__, so a
 light consumer (e.g. the CLI on a review-only Mac install) can import this module
@@ -206,7 +206,7 @@ class HFGroundingDINODetector:
 
             # ABSOLUTE PIXEL xyxy -> canonical. BBox clamps to [0,1] and RAISES on a
             # degenerate (zero/negative-area) box; drop those rather than abort the
-            # image (CLAUDE.md §6.4).
+            # image (SPEC.md §6.4).
             try:
                 box = BBox.from_pixel_xyxy(x1, y1, x2, y2, width, height)
             except ValueError as exc:

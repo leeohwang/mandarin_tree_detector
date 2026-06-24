@@ -1,7 +1,7 @@
-"""Annotate: draw detector boxes onto image copies for human QC (CLAUDE.md §6.6).
+"""Annotate: draw detector boxes onto image copies for human QC (SPEC.md §6.6).
 
 These previews exist for ONE reason: so a human can SANITY-CHECK that the
-auto-labels landed on the right fruit before trusting them (CLAUDE.md §1, §6.6).
+auto-labels landed on the right fruit before trusting them (SPEC.md §1, §6.6).
 
 Internalize the project's central reframe (§1): the deliverable of Grove is the
 LABEL DATA (the coordinate files written by export.py), NOT these pictures. The
@@ -127,7 +127,7 @@ def _annotate_one(
     # Build a supervision Detections from the record's CANONICAL boxes. Canonical
     # is normalized xyxy in [0,1]; supervision wants ABSOLUTE PIXEL xyxy, so we
     # convert each box via box.to_pixel_xyxy(W, H) (one place owns this math; see
-    # CLAUDE.md §9). Coordinate bugs here are silent and look "almost right", so
+    # SPEC.md §9). Coordinate bugs here are silent and look "almost right", so
     # we trust the canonical converters rather than hand-rolling the scaling.
     if record.detections:
         xyxy = np.array(

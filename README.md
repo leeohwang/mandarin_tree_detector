@@ -10,7 +10,7 @@ local browser UI, and the corrected labels are exported as a clean dataset — t
 that produces training labels for a mandarin-picking robot's perception model.
 
 > **The deliverable is label data (coordinate files), not annotated images.** The previews
-> exist only so a human can verify the labels. See `CLAUDE.md` for the full build spec.
+> exist only so a human can verify the labels. See `SPEC.md` for the full build spec.
 
 If you are an operator (not a developer), you want **`OPERATOR_GUIDE.md`**, not this file.
 
@@ -140,7 +140,7 @@ export:
   seed: 42                         # deterministic split
 ```
 
-Prompt phrasing and `box_threshold` are dataset-sensitive — see `CLAUDE.md` §8/§11 for tuning.
+Prompt phrasing and `box_threshold` are dataset-sensitive — see `SPEC.md` §8/§11 for tuning.
 
 ---
 
@@ -167,4 +167,4 @@ HF fallback are all exercised with autodistill mocked in-process. Only real mode
 Pinned dependency groups (`pyproject.toml`): base (light) · `[review]` (FastAPI, torch-free) ·
 `[gpu]` (Kaggle) · `[dev]` (pytest, httpx).
 
-See `CLAUDE.md` for the authoritative spec, build milestones (M0–M5), and design rationale.
+See `SPEC.md` for the authoritative spec, build milestones (M0–M5), and design rationale.

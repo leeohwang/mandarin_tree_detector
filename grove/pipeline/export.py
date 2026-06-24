@@ -1,4 +1,4 @@
-"""Dataset export — write the REAL deliverable (CLAUDE.md §1, §6.7, §16).
+"""Dataset export — write the REAL deliverable (SPEC.md §1, §6.7, §16).
 
 This module turns the current annotation state into a standard object-detection
 dataset in YOLO and/or COCO format. It is deliberately *format-agnostic about its
@@ -11,7 +11,7 @@ the deliverable; the annotated previews are not. So correctness and format of th
 output matter above all, and we VALIDATE on the way out (§6.7, §16): every label
 references a real class id and no box falls outside the image.
 
-This file is LIGHT (CLAUDE.md core import discipline): std lib + pyyaml + grove
+This file is LIGHT (SPEC.md core import discipline): std lib + pyyaml + grove
 core only — NO cv2 / PIL / supervision / ultralytics. It runs both on the GPU side
 (`grove export`) and locally during review re-export, where the heavy extras are
 not installed. Image pixel dimensions come from the Manifest (recorded at ingest);
@@ -54,7 +54,7 @@ def write_dataset(
         manifest: the source of truth for boxes (predictions OR corrections).
         classes: canonical class list; the INDEX into this list is the class id
             written into YOLO labels and COCO categories. Order is load-bearing
-            and must stay stable across runs (CLAUDE.md §6.2).
+            and must stay stable across runs (SPEC.md §6.2).
         work_dir: where the prepared images live (record.path is relative to it).
         export_dir: dataset output root (cleaned + recreated for idempotency).
         formats: subset of {"yolo", "coco"} controlling which formats are written.
@@ -273,7 +273,7 @@ def write_dataset(
 def export(cfg: Config) -> dict:
     """Export the dataset from the current annotation state (CLI entrypoint).
 
-    Source priority (most-corrected first, CLAUDE.md §6.7 / shared layout):
+    Source priority (most-corrected first, SPEC.md §6.7 / shared layout):
         1. review_store.json  — human corrections (the reviewed truth)
         2. predictions.json   — raw auto-labels (pre-review)
         3. manifest.json      — ingest-only (boxes empty; negatives-only dataset)

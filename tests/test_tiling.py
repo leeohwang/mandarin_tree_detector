@@ -1,4 +1,4 @@
-"""Tiling tests: coverage, coordinate TRANSLATION, and seam MERGE (CLAUDE.md §6.5, §13).
+"""Tiling tests: coverage, coordinate TRANSLATION, and seam MERGE (SPEC.md §6.5, §13).
 
 Tiling is the silent-coordinate-bug minefield (§12): a box can come back mirrored,
 off by the tile origin, or normalized against the wrong dimension and still look

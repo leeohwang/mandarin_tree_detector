@@ -6,7 +6,7 @@ name: CI
 # via pytest.importorskip. What DOES run: the canonical<->YOLO/COCO converters,
 # tiling math, ingest/export, the review store, AND the detector adapters'
 # supervision->canonical conversion + registry/construction/fallback (autodistill
-# is mocked in-process, so those run on a plain CPU runner). See CLAUDE.md §13.
+# is mocked in-process, so those run on a plain CPU runner). See SPEC.md §13.
 
 on:
   push:

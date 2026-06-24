@@ -1,16 +1,16 @@
 """Tiling (SAHI-style slicing) for small/dense fruit in large tree images.
 
-WHY THIS EXISTS (CLAUDE.md §6.5, §11): in a wide tree shot, distant mandarins can
+WHY THIS EXISTS (SPEC.md §6.5, §11): in a wide tree shot, distant mandarins can
 be only a few pixels wide at full-image downscale and simply vanish before the
 detector ever sees them. The fix is to slice the image into overlapping tiles, run
 the detector on each tile (where the fruit is now a healthy fraction of the tile),
 translate each tile's boxes back into full-image coordinates, and merge duplicate
 detections across the seams with NMS.
 
-This module is a clean WRAPPER around any ``Detector`` (CLAUDE.md §6.4) — it knows
+This module is a clean WRAPPER around any ``Detector`` (SPEC.md §6.4) — it knows
 nothing about which backend ran, only that ``base.detect(tile)`` returns CANONICAL
 boxes (normalized xyxy, top-left origin) relative to the *tile* it was given. The
-coordinate translation is the silent-bug minefield (CLAUDE.md §12), so every step
+coordinate translation is the silent-bug minefield (SPEC.md §12), so every step
 is converted through the core converters and commented heavily.
 
 Pure numpy + core only — NO cv2/torch here. ``image_bgr`` is treated as a plain
@@ -137,7 +137,7 @@ def merge_detections(dets: list[Detection], iou_threshold: float) -> list[Detect
 
     An object straddling a tile boundary is detected once per tile; after the
     boxes are translated to full-image coords they overlap heavily, so we must
-    suppress the redundant copies (CLAUDE.md §6.5: "one box, not two").
+    suppress the redundant copies (SPEC.md §6.5: "one box, not two").
 
     Algorithm (standard greedy NMS, run independently per class):
       1. Group detections by ``label`` so a mandarin never suppresses a different

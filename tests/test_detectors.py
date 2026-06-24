@@ -1,5 +1,5 @@
 """Executed validation of the GPU detector adapters' supervision -> canonical
-conversion (CLAUDE.md §2.4, §6.4, §12).
+conversion (SPEC.md §2.4, §6.4, §12).
 
 A real Grounding DINO / YOLO-World forward pass needs a GPU and is out of scope
 for CI, but the *coordinate + label conversion* — the silent-bug surface — does

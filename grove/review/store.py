@@ -1,11 +1,11 @@
-"""Annotation store: the source of truth for human corrections (CLAUDE.md §6.8).
+"""Annotation store: the source of truth for human corrections (SPEC.md §6.8).
 
 This is the LOCAL side's authoritative state. The review UI seeds it from the
 detector's raw predictions on first load, then every box edit / status change a
 reviewer makes is persisted here. The store is what `export` re-reads to produce
 the final, human-corrected dataset.
 
-Why a separate file (CLAUDE.md §6.8, §12 — "corrections must NOT destroy raw
+Why a separate file (SPEC.md §6.8, §12 — "corrections must NOT destroy raw
 predictions"): we keep <work_dir>/review_store.json strictly distinct from
 <work_dir>/predictions.json. The predictions file is the RAW auto-label output
 and is never touched after detect writes it — so we can always measure how much
@@ -164,7 +164,7 @@ class AnnotationStore:
         """Absolute path to the prepared image on disk, or None if id unknown.
 
         ImageRecord.path is RELATIVE TO work_dir ("images/<id>.<ext>"), so the
-        real location is always work_dir / record.path (CLAUDE.md shared layout).
+        real location is always work_dir / record.path (SPEC.md shared layout).
         """
         rec = self._index.get(image_id)
         if rec is None:

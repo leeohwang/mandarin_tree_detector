@@ -1,17 +1,17 @@
-"""Detect: run an open-vocab detector over the manifest -> predictions (CLAUDE.md §6.4, §7).
+"""Detect: run an open-vocab detector over the manifest -> predictions (SPEC.md §6.4, §7).
 
 This is the GPU-hungry stage. It loads ``<work_dir>/manifest.json`` (produced by
 ingest), constructs the configured detector (optionally wrapped in the tiling
 detector for small/dense fruit), runs it on every image, and writes the filled
 predictions out to ``<work_dir>/predictions.json``.
 
-TEACHER, NOT THE ROBOT'S MODEL (CLAUDE.md §2/§12). Grounding DINO here is the slow,
+TEACHER, NOT THE ROBOT'S MODEL (SPEC.md §2/§12). Grounding DINO here is the slow,
 accurate "teacher" used to *label* data — it is never the robot's deployable
 runtime. Only the distilled YOLO student (pipeline/train.py) is robot-deployable.
 The boxes written here are *drafts*: the mandatory human review step (review/)
 turns them into a trustworthy dataset.
 
-RESUMABILITY (CLAUDE.md §7, §10 — the central design requirement of this stage).
+RESUMABILITY (SPEC.md §7, §10 — the central design requirement of this stage).
 A dropped Kaggle session must not waste the scarce weekly GPU quota by re-detecting
 images already done. So:
   * If ``<work_dir>/predictions.json`` already exists, we load it and carry forward
@@ -210,7 +210,7 @@ def _drop_oversized_boxes(
     emit a single box covering ~the entire image. Such a box is useless as an
     object-level label and a recurring review headache, so we drop any detection
     whose CANONICAL (normalized) box area exceeds ``max_area_frac``. A value of
-    1.0 disables the safeguard. (CLAUDE.md §11 — domain guidance.)
+    1.0 disables the safeguard. (SPEC.md §11 — domain guidance.)
     """
     if max_area_frac >= 1.0 or not detections:
         return detections

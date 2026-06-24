@@ -6,8 +6,8 @@ CANONICAL FORMAT (the ONE internal representation the entire codebase reasons in
     Invariants enforced elsewhere (see models.BBox): 0 <= x1 < x2 <= 1, 0 <= y1 < y2 <= 1.
 
 Every external format expresses boxes differently, and the bugs are *silent* — a
-mirrored / transposed / off-by-W box looks "almost right" (CLAUDE.md §12). So we
-convert ONLY at the boundaries, using exactly the math from CLAUDE.md §8, and we
+mirrored / transposed / off-by-W box looks "almost right" (SPEC.md §12). So we
+convert ONLY at the boundaries, using exactly the math from SPEC.md §8, and we
 unit-test the round-trips first (tests/test_formats.py).
 
 These are pure functions on plain floats/tuples — NO pydantic, NO numpy, NO import
@@ -24,7 +24,7 @@ from __future__ import annotations
 #   because both formats are already normalized to image size.
 # -----------------------------------------------------------------------------
 def canonical_to_yolo(box: tuple[float, float, float, float]) -> tuple[float, float, float, float]:
-    """Canonical (x1,y1,x2,y2) -> YOLO (cx,cy,w,h). All normalized; CLAUDE.md §8."""
+    """Canonical (x1,y1,x2,y2) -> YOLO (cx,cy,w,h). All normalized; SPEC.md §8."""
     x1, y1, x2, y2 = box
     cx = (x1 + x2) / 2.0  # center x = midpoint of the two corners
     cy = (y1 + y2) / 2.0  # center y = midpoint of the two corners
@@ -34,7 +34,7 @@ def canonical_to_yolo(box: tuple[float, float, float, float]) -> tuple[float, fl
 
 
 def yolo_to_canonical(yolo: tuple[float, float, float, float]) -> tuple[float, float, float, float]:
-    """YOLO (cx,cy,w,h) -> canonical (x1,y1,x2,y2). All normalized; CLAUDE.md §8."""
+    """YOLO (cx,cy,w,h) -> canonical (x1,y1,x2,y2). All normalized; SPEC.md §8."""
     cx, cy, w, h = yolo
     x1 = cx - w / 2.0  # left   = center minus half-width
     x2 = cx + w / 2.0  # right  = center plus half-width
@@ -51,7 +51,7 @@ def yolo_to_canonical(yolo: tuple[float, float, float, float]) -> tuple[float, f
 def canonical_to_coco(
     box: tuple[float, float, float, float], W: int, H: int
 ) -> tuple[float, float, float, float]:
-    """Canonical (x1,y1,x2,y2) -> COCO (x_min,y_min,width,height) in pixels; CLAUDE.md §8."""
+    """Canonical (x1,y1,x2,y2) -> COCO (x_min,y_min,width,height) in pixels; SPEC.md §8."""
     x1, y1, x2, y2 = box
     x_min = x1 * W                # scale normalized left edge to pixels
     y_min = y1 * H               # scale normalized top edge to pixels
@@ -63,7 +63,7 @@ def canonical_to_coco(
 def coco_to_canonical(
     coco: tuple[float, float, float, float], W: int, H: int
 ) -> tuple[float, float, float, float]:
-    """COCO (x_min,y_min,width,height) px -> canonical (x1,y1,x2,y2); CLAUDE.md §8."""
+    """COCO (x_min,y_min,width,height) px -> canonical (x1,y1,x2,y2); SPEC.md §8."""
     x_min, y_min, width, height = coco
     x1 = x_min / W                       # left   pixel -> normalized
     y1 = y_min / H                       # top    pixel -> normalized
@@ -76,12 +76,12 @@ def coco_to_canonical(
 # Pixel-xyxy  <->  Canonical
 #   Pixel xyxy = absolute-pixel corners (x1,y1,x2,y2). This is what
 #   supervision / Grounding DINO emit natively, and what we draw with.
-#   Convert by dividing x's by W and y's by H (CLAUDE.md §6.4, §8).
+#   Convert by dividing x's by W and y's by H (SPEC.md §6.4, §8).
 # -----------------------------------------------------------------------------
 def pixel_xyxy_to_canonical(
     xyxy: tuple[float, float, float, float], W: int, H: int
 ) -> tuple[float, float, float, float]:
-    """Absolute-pixel corners -> canonical normalized corners; CLAUDE.md §6.4/§8."""
+    """Absolute-pixel corners -> canonical normalized corners; SPEC.md §6.4/§8."""
     x1, y1, x2, y2 = xyxy
     return (x1 / W, y1 / H, x2 / W, y2 / H)  # x by W, y by H — never swap these
 
@@ -89,6 +89,6 @@ def pixel_xyxy_to_canonical(
 def canonical_to_pixel_xyxy(
     box: tuple[float, float, float, float], W: int, H: int
 ) -> tuple[float, float, float, float]:
-    """Canonical normalized corners -> absolute-pixel corners (for drawing); CLAUDE.md §8."""
+    """Canonical normalized corners -> absolute-pixel corners (for drawing); SPEC.md §8."""
     x1, y1, x2, y2 = box
     return (x1 * W, y1 * H, x2 * W, y2 * H)  # inverse of pixel_xyxy_to_canonical

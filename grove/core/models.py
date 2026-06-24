@@ -1,4 +1,4 @@
-"""Canonical data model for Grove (CLAUDE.md §6.1).
+"""Canonical data model for Grove (SPEC.md §6.1).
 
 These Pydantic v2 models are the data contract shared across the GPU side
 (pipeline) and the local side (review UI). They communicate ONLY through files
@@ -32,7 +32,7 @@ _DEGENERATE_EPS = 1e-9
 class BBox(BaseModel):
     """The canonical bounding box: normalized xyxy, top-left origin.
 
-    Invariants (CLAUDE.md §6.1): 0 <= x1 < x2 <= 1 and 0 <= y1 < y2 <= 1.
+    Invariants (SPEC.md §6.1): 0 <= x1 < x2 <= 1 and 0 <= y1 < y2 <= 1.
     On construction we CLAMP each coordinate into [0, 1] (detectors and the
     review UI can produce slightly-out-of-bounds values), then reject anything
     that is degenerate after clamping (x1 >= x2 or y1 >= y2).
@@ -147,7 +147,7 @@ class ImageRecord(BaseModel):
 class Manifest(BaseModel):
     """The on-disk record of one labeling run + its full provenance.
 
-    CLAUDE.md §6.1/§12: "Every run must record its provenance" — so any dataset
+    SPEC.md §6.1/§12: "Every run must record its provenance" — so any dataset
     is traceable back to the exact settings that produced it, and two runs are
     never silently confused. These fields capture detector, prompt/ontology,
     thresholds, tiling, model + grove versions, and a timestamp.

@@ -1,23 +1,23 @@
 """Optional student-distillation stage — train a fast YOLO on REVIEWED labels.
 
-Read CLAUDE.md §6.9, §2 (point 1), and §12 before changing anything here.
+Read SPEC.md §6.9, §2 (point 1), and §12 before changing anything here.
 
 THE TEACHER vs STUDENT DISTINCTION IS THE WHOLE POINT OF THIS FILE — keep it loud:
 
 - Grounding DINO (the open-vocab detector used in `grove detect`) is the *teacher*.
   It is accurate but SLOW and is NOT deployable on the robot — never treat it as a
-  runtime detector (CLAUDE.md §2 point 1, §12 "Deploying the teacher").
+  runtime detector (SPEC.md §2 point 1, §12 "Deploying the teacher").
 - This stage distills the teacher's HUMAN-REVIEWED labels into a *student* YOLO
   (ultralytics). THOSE STUDENT WEIGHTS — not Grounding DINO — are the only
   robot-deployable artifact produced by this whole pipeline.
 - A student is only as good as the labels it learns from, so we train on the
   EXPORTED dataset, which should be the *reviewed* corrections, not raw auto-labels
-  (CLAUDE.md §2 point 2, §12 "Treating auto-labels as final"). We don't re-validate
+  (SPEC.md §2 point 2, §12 "Treating auto-labels as final"). We don't re-validate
   that here, but we log a loud reminder.
 
 GPU side (Kaggle). Import discipline: ultralytics is a heavy GPU dependency, so it
 is imported LAZILY inside train() — this module must be importable by the CLI on a
-Mac that only has the [review] extra (CLAUDE.md §10, core import discipline).
+Mac that only has the [review] extra (SPEC.md §10, core import discipline).
 """
 
 from __future__ import annotations
@@ -32,7 +32,7 @@ logger = logging.getLogger(__name__)
 
 
 def train(cfg: Config) -> None:
-    """Distill a student YOLO on the reviewed, exported dataset (CLAUDE.md §6.9).
+    """Distill a student YOLO on the reviewed, exported dataset (SPEC.md §6.9).
 
     Trains an ultralytics ``YOLO(cfg.train.model)`` on ``<export_dir>/data.yaml``
     for ``cfg.train.epochs`` epochs at ``imgsz=cfg.train.imgsz``, saving runs under
@@ -58,7 +58,7 @@ def train(cfg: Config) -> None:
         raise FileNotFoundError(
             f"No dataset found at {data_yaml}. Run `grove export` first (ideally "
             "after reviewing the auto-labels) so the student trains on corrected "
-            "labels, not raw teacher output (CLAUDE.md §2, §12)."
+            "labels, not raw teacher output (SPEC.md §2, §12)."
         )
 
     # runs live under work_dir so they travel with the rest of the run's artifacts.
@@ -74,7 +74,7 @@ def train(cfg: Config) -> None:
     logger.info(
         "Distilling TEACHER (Grounding DINO) labels into a STUDENT YOLO. "
         "The student is the robot-deployable artifact; Grounding DINO is NOT "
-        "(CLAUDE.md §2, §12). Training assumes %s holds REVIEWED labels.",
+        "(SPEC.md §2, §12). Training assumes %s holds REVIEWED labels.",
         data_yaml,
     )
     logger.info(
@@ -95,7 +95,7 @@ def train(cfg: Config) -> None:
         raise ImportError(
             "ultralytics is required for `grove train` but is not installed. "
             "Install the GPU extra (e.g. `pip install -e .[gpu]`) on the Kaggle/"
-            "GPU machine. Training is a GPU-side stage (CLAUDE.md §6.9, §10)."
+            "GPU machine. Training is a GPU-side stage (SPEC.md §6.9, §10)."
         ) from exc
 
     # cfg.train.model may be a checkpoint name (e.g. "yolov8n.pt"); ultralytics
@@ -118,7 +118,7 @@ def train(cfg: Config) -> None:
 
     logger.info(
         "Student training complete. DEPLOYABLE ARTIFACT = these YOLO student "
-        "weights, NOT Grounding DINO (CLAUDE.md §2 point 1, §12). "
+        "weights, NOT Grounding DINO (SPEC.md §2 point 1, §12). "
         "Best weights: %s",
         best_weights,
     )

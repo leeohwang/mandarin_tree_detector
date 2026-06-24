@@ -1,4 +1,4 @@
-"""YOLO-World open-vocabulary detector backend (CLAUDE.md §2.5, §6.4).
+"""YOLO-World open-vocabulary detector backend (SPEC.md §2.5, §6.4).
 
 This is the *alternate* labeling backend. It exists primarily to PROVE the
 ``Detector`` abstraction holds: from the outside it is indistinguishable from the

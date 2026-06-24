@@ -1,4 +1,4 @@
-"""Export INTEGRATION test — the REAL deliverable is the coordinate files (CLAUDE.md §1, §6.7, §13).
+"""Export INTEGRATION test — the REAL deliverable is the coordinate files (SPEC.md §1, §6.7, §13).
 
 §13 asks for an integration test that takes a small hand-built Manifest through
 write_dataset and proves a STRUCTURALLY VALID YOLO + COCO dataset comes out. This

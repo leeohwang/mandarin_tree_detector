@@ -1,4 +1,4 @@
-"""Grove command-line interface (CLAUDE.md §7).
+"""Grove command-line interface (SPEC.md §7).
 
 Subcommands map one-to-one onto the pipeline stages:
 
@@ -18,7 +18,7 @@ Why stage imports are LAZY (inside each command body, never at module top):
 If we imported the GPU-side stages at module import time, simply *loading* the
 CLI to run ``review`` would crash with a missing heavy dependency. Importing
 each stage only when its command actually runs keeps the CLI importable with
-the light review-only install (and equally on the GPU side). See CLAUDE.md
+the light review-only install (and equally on the GPU side). See SPEC.md
 §2.3, §10.
 """
 
@@ -123,7 +123,7 @@ def train(config: str = _ConfigOption) -> None:
     """Distill a student YOLO on the reviewed dataset (GPU, optional).
 
     Note: the trained YOLO student — not Grounding DINO — is the
-    robot-deployable artifact (CLAUDE.md §2.1, §6.9).
+    robot-deployable artifact (SPEC.md §2.1, §6.9).
     """
     _setup_logging()
     cfg = load_config(config)

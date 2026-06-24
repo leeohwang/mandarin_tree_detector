@@ -1,4 +1,4 @@
-"""Typed, validated configuration for Grove (CLAUDE.md §6.2).
+"""Typed, validated configuration for Grove (SPEC.md §6.2).
 
 One YAML drives the whole pipeline. config.example.yaml is the shipped source of
 truth (it targets individual trees); this module defines that same schema and
@@ -8,7 +8,7 @@ The field defaults below are minimal fallbacks for keys omitted from the YAML,
 not necessarily the shipped example's values.
 
 Defaults are chosen so a MINIMAL YAML (just paths + ontology) still validates —
-the operator edits only what matters (CLAUDE.md §10.4). load_config() also
+the operator edits only what matters (SPEC.md §10.4). load_config() also
 auto-creates the output directories so the user never has to (§10.4).
 
 Import discipline: std lib + pydantic + pyyaml only. No GPU/heavy deps.
@@ -34,13 +34,13 @@ class PathsConfig(BaseModel):
     def ensure_dirs(self) -> None:
         """Auto-create the OUTPUT dirs (work + export). We do NOT create
         input_dir — its absence is a real user error worth surfacing, not
-        silently masking with an empty folder (CLAUDE.md §10.4)."""
+        silently masking with an empty folder (SPEC.md §10.4)."""
         Path(self.work_dir).mkdir(parents=True, exist_ok=True)
         Path(self.export_dir).mkdir(parents=True, exist_ok=True)
 
 
 class DetectorConfig(BaseModel):
-    """Open-vocab detector backend + prompt ontology + thresholds (CLAUDE.md §6.4).
+    """Open-vocab detector backend + prompt ontology + thresholds (SPEC.md §6.4).
 
     ontology maps PROMPT TEXT -> CLASS NAME written into the labels. backend is a
     strict enum so a typo can't silently fall through to a default model.
@@ -103,7 +103,7 @@ class ExportConfig(BaseModel):
 
     formats: list[str] = Field(default_factory=lambda: ["yolo", "coco"])
     val_split: float = 0.15
-    seed: int = 42  # seed the split so runs are reproducible (CLAUDE.md §12)
+    seed: int = 42  # seed the split so runs are reproducible (SPEC.md §12)
 
     @field_validator("val_split")
     @classmethod
@@ -187,5 +187,5 @@ def load_config(path: str | Path) -> Config:
     if not isinstance(data, dict):
         raise ValueError(f"config root must be a mapping, got {type(data).__name__}")
     cfg = Config.model_validate(data)
-    cfg.paths.ensure_dirs()  # auto-create outputs (CLAUDE.md §10.4)
+    cfg.paths.ensure_dirs()  # auto-create outputs (SPEC.md §10.4)
     return cfg

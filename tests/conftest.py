@@ -1,4 +1,4 @@
-"""Shared pytest fixtures + a GPU-free StubDetector (CLAUDE.md §13).
+"""Shared pytest fixtures + a GPU-free StubDetector (SPEC.md §13).
 
 The whole point of this file is to make the pipeline and tiling wrapper testable
 on a Mac with NO GPU and NONE of the heavy detector libs installed. Per §13 the

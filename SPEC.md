@@ -1,6 +1,6 @@
-# CLAUDE.md — Grove: Mandarin Auto-Labeling Pipeline
+# SPEC.md — Grove: Mandarin Auto-Labeling Pipeline
 
-> This file is the single source of truth for building this project. You (Claude Code) are
+> This file is the single source of truth for building this project. You are
 > starting with **no prior context**. Read this document fully before writing any code.
 > When the spec is silent on a decision, follow the *principles* stated here rather than
 > guessing, and prefer the simplest thing that satisfies them.
@@ -155,7 +155,7 @@ libraries.
 
 ```
 grove/
-├── CLAUDE.md                      # this file (build spec — for you, Claude Code)
+├── SPEC.md                      # this file (build spec)
 ├── README.md                      # dev overview: architecture + how the code is organized
 ├── OPERATOR_GUIDE.md              # ★ the human's manual run steps — keep MINIMAL (see §10.4)
 ├── setup.sh                       # one-command local setup (venv + [review] install)

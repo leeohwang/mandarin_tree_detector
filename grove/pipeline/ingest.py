@@ -1,4 +1,4 @@
-"""Ingest: scan an image folder -> EXIF-normalized images + Manifest (CLAUDE.md §6.3).
+"""Ingest: scan an image folder -> EXIF-normalized images + Manifest (SPEC.md §6.3).
 
 This is the first pipeline stage and the producer of the data contract every
 later stage reads. It does three jobs:
@@ -8,7 +8,7 @@ later stage reads. It does three jobs:
    stored orientation tag is dropped. This matters because boxes are recorded in
    coordinates relative to the upright pixel grid; if the orientation tag stayed,
    the detector's view, the reviewer's view, and the stored boxes could all
-   disagree (CLAUDE.md §6.3, §12 EXIF pitfall). We fix it ONCE here so nothing
+   disagree (SPEC.md §6.3, §12 EXIF pitfall). We fix it ONCE here so nothing
    downstream ever has to think about EXIF again.
 3. Write the prepared images to a FLAT ``<work_dir>/images/<id>.<ext>`` directory
    and emit ``<work_dir>/manifest.json`` (images + run provenance, detections
@@ -33,7 +33,7 @@ from grove.core.models import ImageRecord, Manifest
 logger = logging.getLogger(__name__)
 
 # Accepted image suffixes (compared case-insensitively against the lowercased
-# file extension). Matches CLAUDE.md §6.3.
+# file extension). Matches SPEC.md §6.3.
 _IMAGE_SUFFIXES = {".jpg", ".jpeg", ".png", ".webp"}
 
 # Characters we allow to survive verbatim in an id slug. ids are used both as
@@ -49,7 +49,7 @@ def ingest(cfg: Config) -> Manifest:
 
     Returns the in-memory Manifest and writes ``<work_dir>/manifest.json``.
     Unreadable/corrupt files are skipped and logged rather than crashing the run
-    (CLAUDE.md §6.3) — one bad photo in a folder of hundreds must not abort the
+    (SPEC.md §6.3) — one bad photo in a folder of hundreds must not abort the
     whole labeling pass.
     """
     cfg.paths.ensure_dirs()  # auto-create work_dir + export_dir (§10.4)
@@ -134,7 +134,7 @@ def _prepare_image(src: Path, image_id: str, images_out_dir: Path) -> tuple[str,
 
     Returns (output_filename, output_path).
 
-    Behavior (CLAUDE.md §6.3):
+    Behavior (SPEC.md §6.3):
     - Apply EXIF orientation via ImageOps.exif_transpose so the saved pixels are
       upright, then ensure the saved file carries NO orientation tag.
     - If exif_transpose actually rotated/flipped the pixels, re-encode the

@@ -1,1 +1,1 @@
-"""GPU side: ingest, detect, annotate, export, train (CLAUDE.md §3)."""
+"""GPU side: ingest, detect, annotate, export, train (SPEC.md §3)."""

@@ -1,7 +1,7 @@
-"""Round-trip + hand-computed tests for the coordinate converters (CLAUDE.md §8, §13).
+"""Round-trip + hand-computed tests for the coordinate converters (SPEC.md §8, §13).
 
 Coordinate bugs are SILENT: a mirrored / transposed / off-by-W box looks "almost
-right" (CLAUDE.md §12). The defenses here are:
+right" (SPEC.md §12). The defenses here are:
 
   1. Round-trip every converter pair and assert identity within 1e-9.
   2. Use NON-SQUARE image sizes (1920x1080 and 640x853) so any W/H swap inside a
@@ -22,7 +22,7 @@ import pytest
 from grove.core import formats
 from grove.core.models import BBox
 
-# Floating-point tolerance for round-trip identity (CLAUDE.md §8 last paragraph).
+# Floating-point tolerance for round-trip identity (SPEC.md §8 last paragraph).
 TOL = 1e-9
 
 # NON-SQUARE image sizes. 1920x1080 is landscape (W > H); 640x853 is portrait
